@@ -17,16 +17,16 @@ tabs = st.tabs(["🎯 Online Prediction", "📊 Batch Prediction"])
 
 with tabs[0]:
     st.header("Single Product Sales Prediction")
-    
+
     col1, col2 = st.columns(2)
-    
+
     with col1:
         product_weight = st.number_input("Product Weight (kg)", min_value=0.0, max_value=50.0, value=12.5, step=0.1)
         product_sugar = st.selectbox("Product Sugar Content", ["Low Sugar", "Regular", "No Sugar"])
         allocated_area = st.number_input("Product Allocated Area (ratio)", min_value=0.0, max_value=1.0, value=0.05, step=0.01)
         product_mrp = st.number_input("Product MRP ($)", min_value=0.0, max_value=1000.0, value=150.0, step=1.0)
         product_id_char = st.selectbox("Product Category Identifier", ["FD", "DR", "NC"])
-        
+
     with col2:
         store_size = st.selectbox("Store Size", ["Small", "Medium", "High"])
         store_city = st.selectbox("Store Location City Type", ["Tier 1", "Tier 2", "Tier 3"])
@@ -47,7 +47,7 @@ with tabs[0]:
             "Store_Age_Years": int(store_age),
             "Product_Type_Category": product_type_cat
         }
-        
+
         try:
             response = requests.post(f"{backend_url}/v1/predict", json=payload)
             if response.status_code == 200:
@@ -62,18 +62,18 @@ with tabs[0]:
 with tabs[1]:
     st.header("Upload CSV for Bulk Predictions")
     uploaded_file = st.file_uploader("Upload Batch CSV file", type=["csv"])
-    
+
     if uploaded_file is not None:
         # Read and preview uploaded data
         df = pd.read_csv(uploaded_file)
         st.write("Preview of uploaded data:")
         st.dataframe(df.head())
-        
+
         if st.button("Run Batch Inference"):
             # Reset the file pointer to the beginning for uploading
             uploaded_file.seek(0)
             files = {"file": (uploaded_file.name, uploaded_file.read(), "text/csv")}
-            
+
             try:
                 response = requests.post(f"{backend_url}/v1/predictbatch", files=files)
                 if response.status_code == 200:
